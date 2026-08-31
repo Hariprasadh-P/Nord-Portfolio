@@ -5,10 +5,10 @@ import Link from "next/link";
 import { Lock, Instagram, Linkedin, Twitter, Youtube } from "lucide-react";
 
 interface FooterProps {
-  agencyName?: string;
-  logoUrl?: string;
-  motoLine?: string;
-  contactEmail?: string;
+  agencyName?: string | null;
+  logoUrl?: string | null;
+  motoLine?: string | null;
+  contactEmail?: string | null;
   instagramUrl?: string | null;
   linkedinUrl?: string | null;
   twitterUrl?: string | null;
@@ -68,7 +68,7 @@ export default function Footer({
               <div className="h-10 w-10 rounded-2xl overflow-hidden bg-slate-900 p-1 border border-slate-700 shadow-sm flex items-center justify-center">
                 {logoUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={logoUrl} alt={agencyName} className="h-full w-full object-contain" />
+                  <img src={logoUrl} alt={agencyName || "Agency Logo"} className="h-full w-full object-contain" />
                 ) : (
                   <span className="font-display font-black text-sm text-purple-400">N</span>
                 )}

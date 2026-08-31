@@ -20,7 +20,7 @@ export interface PackageItem {
   description: string;
   features: string[];
   isPopular?: boolean;
-  badge?: string;
+  badge?: string | null;
   ctaText?: string;
   order: number;
 }
@@ -33,8 +33,8 @@ export interface CaseStudyItem {
   roiMetric: string;
   metricLabel: string;
   description: string;
-  imageUrl?: string;
-  videoUrl?: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
   tags: string[];
   isFeatured?: boolean;
   order: number;
@@ -46,8 +46,8 @@ export interface TestimonialItem {
   role: string;
   company: string;
   quote: string;
-  avatarUrl?: string;
-  metric?: string;
+  avatarUrl?: string | null;
+  metric?: string | null;
   rating: number;
   isFeatured: boolean;
   order: number;
@@ -75,14 +75,14 @@ export interface AgencySettings {
   contactEmail: string;
   contactPhone: string;
   location: string;
-  instagramUrl: string;
-  linkedinUrl: string;
-  twitterUrl: string;
-  youtubeUrl: string;
-  whatsappNumber: string;
-  calendlyUrl: string;
-  accentColor: string;
-  colorScheme: string;
+  instagramUrl?: string | null;
+  linkedinUrl?: string | null;
+  twitterUrl?: string | null;
+  youtubeUrl?: string | null;
+  whatsappNumber?: string | null;
+  calendlyUrl?: string | null;
+  accentColor?: string | null;
+  colorScheme?: string | null;
 }
 
 export interface PortfolioData {

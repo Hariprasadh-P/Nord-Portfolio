@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { initialPortfolioData } from "@/data/portfolioData";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -19,9 +20,10 @@ export async function GET() {
       ]);
 
       if (settings || (videos && videos.length > 0)) {
-        return NextResponse.json({
-          success: true,
-          data: {
+        return NextResponse.json(
+          {
+            success: true,
+            data: {
             settings: settings || initialPortfolioData.settings,
             videos: videos && videos.length > 0 ? videos : initialPortfolioData.videos,
             packages:
@@ -62,16 +64,29 @@ export async function GET() {
                         : c.tags,
                   }))
                 : initialPortfolioData.caseStudies,
+            },
           },
-        });
+          {
+            headers: {
+              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+            },
+          }
+        );
       }
     }
   } catch {
     // Fallback cleanly to static dataset
   }
 
-  return NextResponse.json({
-    success: true,
-    data: initialPortfolioData,
-  });
+  return NextResponse.json(
+    {
+      success: true,
+      data: initialPortfolioData,
+    },
+    {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      },
+    }
+  );
 }

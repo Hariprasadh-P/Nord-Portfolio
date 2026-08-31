@@ -20,30 +20,15 @@ import {
   ArrowLeft,
   Home,
   Compass,
-  X,
   Navigation,
   Layers,
+  X,
 } from "lucide-react";
 import { soundFx } from "@/lib/soundFx";
+import { AgencySettings } from "@/data/portfolioData";
 
 interface SpatialWorldProps {
-  settings: {
-    agencyName: string;
-    logoUrl?: string;
-    motoLine: string;
-    subHeadline: string;
-    aboutText: string;
-    contactEmail: string;
-    contactPhone: string;
-    location: string;
-    instagramUrl?: string | null;
-    linkedinUrl?: string | null;
-    twitterUrl?: string | null;
-    youtubeUrl?: string | null;
-    whatsappNumber?: string;
-    calendlyUrl?: string;
-    accentColor: string;
-  };
+  settings: AgencySettings;
   videos: VideoItemData[];
   packages: PackageItemData[];
   services?: ServiceItemData[];

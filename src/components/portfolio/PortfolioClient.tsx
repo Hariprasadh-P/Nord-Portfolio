@@ -26,23 +26,13 @@ export default function PortfolioClient({ data: initialData }: { data: Portfolio
   useEffect(() => {
     async function fetchLiveData() {
       try {
-        const res = await fetch("/api/public/content");
+        const res = await fetch("/api/public/content", { cache: "no-store" });
         const json = await res.json();
         if (json.success && json.data) {
-          setData((prev) => ({
-            ...prev,
-            ...json.data,
-            // Preserve static fallbacks for any missing fields
-            settings: json.data.settings || prev.settings,
-            videos: json.data.videos?.length ? json.data.videos : prev.videos,
-            packages: json.data.packages?.length ? json.data.packages : prev.packages,
-            testimonials: json.data.testimonials?.length ? json.data.testimonials : prev.testimonials,
-            services: json.data.services?.length ? json.data.services : prev.services,
-            caseStudies: json.data.caseStudies?.length ? json.data.caseStudies : prev.caseStudies,
-          }));
+          setData(json.data);
         }
       } catch {
-        // Silently keep static data on error
+        // Silently keep current data on error
       }
     }
     fetchLiveData();

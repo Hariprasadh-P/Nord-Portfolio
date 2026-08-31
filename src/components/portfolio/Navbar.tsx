@@ -9,8 +9,8 @@ import NordLogoCompass from "./NordLogoCompass";
 import { soundFx } from "@/lib/soundFx";
 
 interface NavbarProps {
-  agencyName?: string;
-  logoUrl?: string;
+  agencyName?: string | null;
+  logoUrl?: string | null;
   activeDirection?: CardinalDirection;
   onSelectDirection?: (direction: CardinalDirection) => void;
 }

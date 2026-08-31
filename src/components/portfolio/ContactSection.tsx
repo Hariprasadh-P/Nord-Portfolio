@@ -21,13 +21,13 @@ import confetti from "canvas-confetti";
 import { soundFx } from "@/lib/soundFx";
 
 interface ContactSectionProps {
-  initialPackage?: string;
-  selectedPackage?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  location?: string;
-  whatsappNumber?: string;
-  calendlyUrl?: string;
+  initialPackage?: string | null;
+  selectedPackage?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  location?: string | null;
+  whatsappNumber?: string | null;
+  calendlyUrl?: string | null;
 }
 
 export default function ContactSection({
@@ -127,7 +127,7 @@ export default function ContactSection({
     }
   };
 
-  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+  const whatsappLink = `https://wa.me/${(whatsappNumber || "+14158903200").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
     `Hello Nord Media House, I would like to inquire about project partnership (${formData.serviceNeeded}).`
   )}`;
 
@@ -181,7 +181,7 @@ export default function ContactSection({
           </a>
 
           <a
-            href={calendlyUrl}
+            href={calendlyUrl || "https://calendly.com"}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => soundFx.playHoverTick()}
