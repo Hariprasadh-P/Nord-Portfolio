@@ -19,15 +19,22 @@ export async function GET() {
         prisma.caseStudy.findMany({ where: { isFeatured: true }, orderBy: { order: "asc" } }).catch(() => null),
       ]);
 
-      if (settings || (videos && videos.length > 0)) {
-        return NextResponse.json(
-          {
-            success: true,
-            data: {
-            settings: settings || initialPortfolioData.settings,
-            videos: videos && videos.length > 0 ? videos : initialPortfolioData.videos,
+      return NextResponse.json(
+        {
+          success: true,
+          data: {
+            settings: settings
+              ? {
+                  ...initialPortfolioData.settings,
+                  ...settings,
+                }
+              : initialPortfolioData.settings,
+            videos:
+              videos !== null
+                ? videos
+                : initialPortfolioData.videos,
             packages:
-              packages && packages.length > 0
+              packages !== null
                 ? packages.map((p) => ({
                     ...p,
                     features:
@@ -37,11 +44,11 @@ export async function GET() {
                   }))
                 : initialPortfolioData.packages,
             testimonials:
-              testimonials && testimonials.length > 0
+              testimonials !== null
                 ? testimonials
                 : initialPortfolioData.testimonials,
             services:
-              services && services.length > 0
+              services !== null
                 ? services.map((s) => ({
                     ...s,
                     deliverables:
@@ -55,7 +62,7 @@ export async function GET() {
                   }))
                 : initialPortfolioData.services,
             caseStudies:
-              caseStudies && caseStudies.length > 0
+              caseStudies !== null
                 ? caseStudies.map((c) => ({
                     ...c,
                     tags:
@@ -64,15 +71,14 @@ export async function GET() {
                         : c.tags,
                   }))
                 : initialPortfolioData.caseStudies,
-            },
           },
-          {
-            headers: {
-              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
-            },
-          }
-        );
-      }
+        },
+        {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+          },
+        }
+      );
     }
   } catch {
     // Fallback cleanly to static dataset

@@ -24,11 +24,11 @@ async function getPortfolioData(): Promise<PortfolioData> {
           }
         : initialPortfolioData.settings,
       videos:
-        videos && videos.length > 0
+        videos !== null
           ? (videos as unknown as PortfolioData["videos"])
           : initialPortfolioData.videos,
       packages:
-        packages && packages.length > 0
+        packages !== null
           ? packages.map((p) => ({
               ...p,
               features:
@@ -38,11 +38,11 @@ async function getPortfolioData(): Promise<PortfolioData> {
             }))
           : initialPortfolioData.packages,
       testimonials:
-        testimonials && testimonials.length > 0
+        testimonials !== null
           ? (testimonials as unknown as PortfolioData["testimonials"])
           : initialPortfolioData.testimonials,
       services:
-        services && services.length > 0
+        services !== null
           ? services.map((s) => ({
               ...s,
               deliverables:
@@ -56,7 +56,7 @@ async function getPortfolioData(): Promise<PortfolioData> {
             }))
           : initialPortfolioData.services,
       caseStudies:
-        caseStudies && caseStudies.length > 0
+        caseStudies !== null
           ? caseStudies.map((c) => ({
               ...c,
               tags:
