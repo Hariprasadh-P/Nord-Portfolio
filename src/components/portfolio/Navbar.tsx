@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowUpRight, Lock, Compass, Film, Package, Info, Mail } from "lucide-react";
+import { Menu, X, ArrowUpRight, Lock, Volume2, VolumeX } from "lucide-react";
 import { CardinalDirection } from "@/components/canvas/CompassModel3D";
 import NordLogoCompass from "./NordLogoCompass";
+import { soundFx } from "@/lib/soundFx";
 
 interface NavbarProps {
   agencyName?: string;
@@ -19,6 +20,19 @@ export default function Navbar({
   onSelectDirection,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+
+  useEffect(() => {
+    setIsMuted(soundFx.getMuted());
+  }, []);
+
+  const toggleSound = () => {
+    const newState = soundFx.toggleMute();
+    setIsMuted(newState);
+    if (!newState) {
+      soundFx.playHoverTick();
+    }
+  };
 
   const navLinks = [
     {
@@ -54,6 +68,7 @@ export default function Navbar({
   ];
 
   const handleNavClick = (dir: CardinalDirection) => {
+    soundFx.playCoordinateWarp();
     onSelectDirection?.(dir);
     setMobileMenuOpen(false);
   };
@@ -93,6 +108,7 @@ export default function Navbar({
               <button
                 key={link.dir}
                 onClick={() => handleNavClick(link.dir)}
+                onMouseEnter={() => soundFx.playHoverTick()}
                 className={`relative px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 ${
                   isActive
                     ? `${link.activeBg} font-bold shadow-md`
@@ -116,6 +132,15 @@ export default function Navbar({
 
         {/* Action Controls & Bearing HUD */}
         <div className="hidden md:flex items-center gap-3">
+          {/* Audio FX Toggle Button */}
+          <button
+            onClick={toggleSound}
+            title={isMuted ? "Unmute Audio FX" : "Mute Audio FX"}
+            className="p-2 rounded-xl border border-slate-800 bg-slate-950 text-slate-400 hover:text-purple-400 hover:border-purple-500/40 transition shadow-sm"
+          >
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4 text-purple-400" />}
+          </button>
+
           {/* Active Bearing Coordinate Indicator */}
           <div
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-[11px] font-mono font-bold transition-all shadow-md ${getBearingColor()}`}
@@ -135,16 +160,19 @@ export default function Navbar({
             </span>
           </div>
 
-          <Link
-            href="/admin"
+          <a
+            href={process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001"}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-1.5 text-xs font-mono font-bold text-slate-300 hover:text-white hover:border-purple-500/50 transition shadow-sm"
           >
             <Lock className="h-3 w-3 text-purple-400" />
             <span>Admin</span>
-          </Link>
+          </a>
 
           <button
             onClick={() => handleNavClick("west")}
+            onMouseEnter={() => soundFx.playHoverTick()}
             className="group flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-purple-700 px-4 py-1.5 text-xs font-mono font-bold uppercase tracking-wider text-white shadow-md shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-105 transition"
           >
             <span>Book Strategy</span>
@@ -152,8 +180,14 @@ export default function Navbar({
           </button>
         </div>
 
-        {/* Mobile Menu Toggle Button */}
+        {/* Mobile Menu & Audio Toggle Buttons */}
         <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={toggleSound}
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white"
+          >
+            {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4 text-purple-400" />}
+          </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"

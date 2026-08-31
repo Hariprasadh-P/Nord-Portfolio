@@ -4,17 +4,18 @@ import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Film,
-  X,
+  Play,
   Sparkles,
-  Maximize2,
   ChevronLeft,
   ChevronRight,
-  Smartphone,
-  Play,
-  Volume2,
+  Clock,
+  Building2,
+  Tag,
+  Eye,
 } from "lucide-react";
 import UniversalVideoPlayer from "./UniversalVideoPlayer";
 import TiltCard from "./TiltCard";
+import { soundFx } from "@/lib/soundFx";
 
 export interface VideoItemData {
   id: string;
@@ -24,8 +25,9 @@ export interface VideoItemData {
   posterUrl?: string | null;
   category: string;
   clientName?: string | null;
-  isFeatured: boolean;
-  order: number;
+  duration?: string;
+  isFeatured?: boolean;
+  order?: number;
 }
 
 interface VideoShowcaseProps {
@@ -37,7 +39,13 @@ export default function VideoShowcase({ videos = [] }: VideoShowcaseProps) {
   const [modalVideo, setModalVideo] = useState<VideoItemData | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const categories = ["All", ...Array.from(new Set(videos.map((v) => v.category)))];
+  const categories = [
+    "All",
+    "Brand Commercials",
+    "9:16 Vertical Reels",
+    "3D Motion / CGI",
+    "Performance Ads",
+  ];
 
   const filteredVideos =
     selectedCategory === "All"
@@ -45,15 +53,22 @@ export default function VideoShowcase({ videos = [] }: VideoShowcaseProps) {
       : videos.filter((v) => v.category === selectedCategory);
 
   const scrollLeft = () => {
+    soundFx.playHoverTick();
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -340, behavior: "smooth" });
+      scrollContainerRef.current.scrollBy({ left: -360, behavior: "smooth" });
     }
   };
 
   const scrollRight = () => {
+    soundFx.playHoverTick();
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 340, behavior: "smooth" });
+      scrollContainerRef.current.scrollBy({ left: 360, behavior: "smooth" });
     }
+  };
+
+  const handleOpenVideo = (video: VideoItemData) => {
+    soundFx.playSuccessChime();
+    setModalVideo(video);
   };
 
   return (
@@ -67,7 +82,7 @@ export default function VideoShowcase({ videos = [] }: VideoShowcaseProps) {
               <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
               <span>000° NORTH</span>
               <span className="text-sky-600">•</span>
-              <span className="uppercase tracking-widest text-[11px]">3D REELS GALLERY</span>
+              <span className="uppercase tracking-widest text-[11px]">CINEMATIC GALLERY & SHOWCASE</span>
             </div>
 
             <h2 className="font-display font-black text-3xl sm:text-5xl text-white tracking-tight">
@@ -77,202 +92,186 @@ export default function VideoShowcase({ videos = [] }: VideoShowcaseProps) {
               </span>
             </h2>
             <p className="text-sm sm:text-base text-slate-400 mt-2 max-w-xl font-sans font-medium">
-              Interact and scroll horizontally in 2.5D perspective to explore our high-impact vertical showcase.
+              Explore 4K brand commercials, high-velocity viral short-form assets, and photorealistic 3D ray-traced simulations.
             </p>
           </div>
 
-          {/* Categories & Scroll Navigation Buttons */}
-          <div className="flex items-center gap-3">
-            {categories.length > 1 && (
-              <div className="flex flex-wrap gap-1.5 rounded-2xl bg-slate-950/90 p-1.5 border border-slate-800 shadow-sm">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                      selectedCategory === cat
-                        ? "bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white shadow-md shadow-sky-500/30"
-                        : "text-slate-400 hover:text-white hover:bg-slate-900"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {/* Left / Right Chevron Arrows */}
-            <div className="hidden sm:flex items-center gap-2 pl-2">
-              <button
-                onClick={scrollLeft}
-                className="p-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/50 text-slate-300 hover:text-white transition-all shadow-md active:scale-95 cursor-pointer"
-                title="Scroll Left"
-                aria-label="Previous Reels"
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
-                onClick={scrollRight}
-                className="p-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-sky-500/50 text-slate-300 hover:text-white transition-all shadow-md active:scale-95 cursor-pointer"
-                title="Scroll Right"
-                aria-label="Next Reels"
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 3D PERSPECTIVE HORIZONTAL REELS TRACK */}
-        {filteredVideos.length > 0 ? (
-          <div className="relative" style={{ perspective: 1200 }}>
-            <div
-              ref={scrollContainerRef}
-              className="flex items-stretch gap-8 overflow-x-auto pb-10 pt-4 px-2 scroll-smooth snap-x snap-mandatory scrollbar-none"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none", transformStyle: "preserve-3d" }}
+          {/* Navigation Scroll Chevrons */}
+          <div className="hidden sm:flex items-center gap-2">
+            <button
+              onClick={scrollLeft}
+              className="p-2.5 rounded-2xl bg-slate-950/90 border border-slate-800 text-slate-400 hover:text-white hover:border-sky-500/50 hover:bg-slate-900 transition shadow-sm"
+              title="Scroll Left"
             >
-              {filteredVideos.map((video, idx) => (
-                <div
-                  key={video.id}
-                  className="w-[280px] sm:w-[320px] lg:w-[330px] shrink-0 snap-center"
-                >
-                  <TiltCard
-                    maxTilt={10}
-                    glowColor="rgba(56, 189, 248, 0.35)"
-                    className="w-full aspect-[9/16] rounded-[36px] overflow-hidden border-2 border-slate-800 bg-slate-950 shadow-2xl hover:border-sky-400 hover:shadow-[0_20px_50px_rgba(2,132,199,0.3)] transition-all duration-300 flex flex-col justify-between relative group"
-                  >
-                    {/* Top Bar on Reel Card with 3D Pop */}
-                    <div
-                      style={{ transform: "translateZ(25px)" }}
-                      className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between bg-gradient-to-b from-black/90 via-black/40 to-transparent z-20 pointer-events-none"
-                    >
-                      <span className="px-2.5 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md border border-slate-700/80 text-sky-400 text-[10px] font-mono font-bold">
-                        {video.category}
-                      </span>
-
-                      <button
-                        onClick={() => setModalVideo(video)}
-                        className="p-2 rounded-xl bg-slate-950/80 hover:bg-sky-600 text-slate-300 hover:text-white border border-slate-800 transition pointer-events-auto cursor-pointer"
-                        title="Fullscreen 4K"
-                      >
-                        <Maximize2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-
-                    {/* Direct 9:16 Video Player */}
-                    <div className="w-full h-full relative bg-black">
-                      <UniversalVideoPlayer
-                        key={video.id + video.videoUrl}
-                        url={video.videoUrl}
-                        title={video.title}
-                        posterUrl={video.posterUrl}
-                        autoPlay={false}
-                        controls={true}
-                        loop={true}
-                        muted={false}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-
-                    {/* Bottom Overlay with 3D Depth */}
-                    <div
-                      style={{ transform: "translateZ(25px)" }}
-                      className="absolute bottom-0 left-0 right-0 p-4 pt-10 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-20 pointer-events-none"
-                    >
-                      {video.clientName && (
-                        <div className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-wider mb-0.5">
-                          {video.clientName}
-                        </div>
-                      )}
-                      <h4 className="font-display font-bold text-base text-white drop-shadow-md line-clamp-1">
-                        {video.title}
-                      </h4>
-                      {video.description && (
-                        <p className="text-[11px] text-slate-300 line-clamp-2 mt-1 font-sans leading-snug">
-                          {video.description}
-                        </p>
-                      )}
-                    </div>
-                  </TiltCard>
-                </div>
-              ))}
-            </div>
-
-            {/* Gradient Edge Fade */}
-            <div className="absolute top-0 bottom-10 right-0 w-16 bg-gradient-to-l from-[#050B14] to-transparent pointer-events-none hidden sm:block opacity-80" />
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              onClick={scrollRight}
+              className="p-2.5 rounded-2xl bg-slate-950/90 border border-slate-800 text-slate-400 hover:text-white hover:border-sky-500/50 hover:bg-slate-900 transition shadow-sm"
+              title="Scroll Right"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
           </div>
-        ) : (
-          <div className="p-12 rounded-3xl border border-dashed border-slate-800 bg-slate-950/80 text-center">
-            <Film className="h-12 w-12 text-sky-400 mx-auto mb-3 opacity-60" />
-            <h3 className="font-display font-bold text-xl text-white">No Reels Found</h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
-              Upload 9:16 vertical video reels via the Admin Console.
-            </p>
-          </div>
-        )}
-
-        {/* Bottom Horizontal Swipe Guide */}
-        <div className="mt-2 flex items-center justify-between text-xs font-mono text-slate-500">
-          <span className="flex items-center gap-1.5">
-            <Smartphone className="h-3.5 w-3.5 text-sky-400" />
-            <span>2.5D Interactive Reel Deck ({filteredVideos.length} Project Reels)</span>
-          </span>
-          <span className="hidden sm:inline">Hover for 3D tilt · Scroll horizontally to browse →</span>
         </div>
-      </div>
 
-      {/* 9:16 VERTICAL FULLSCREEN MODAL */}
-      <AnimatePresence>
-        {modalVideo && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-2xl"
-            onClick={() => setModalVideo(null)}
-          >
+        {/* Category Filter Tabs */}
+        <div className="flex flex-wrap gap-2 mb-8 p-1.5 rounded-2xl bg-slate-950/90 border border-slate-800/80 w-fit backdrop-blur-xl">
+          {categories.map((cat) => {
+            const isActive = selectedCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => {
+                  soundFx.playHoverTick();
+                  setSelectedCategory(cat);
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                  isActive
+                    ? "bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white shadow-md shadow-sky-500/30 scale-[1.02]"
+                    : "text-slate-400 hover:text-white hover:bg-slate-900"
+                }`}
+              >
+                {cat === "All" ? <Film className="h-3.5 w-3.5" /> : <Tag className="h-3.5 w-3.5" />}
+                <span>{cat}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 2.5D Horizontal Horizontal Scroll Carousel */}
+        <div
+          ref={scrollContainerRef}
+          className="flex gap-6 overflow-x-auto pb-8 pt-2 scrollbar-none snap-x snap-mandatory"
+          style={{ perspective: 1200 }}
+        >
+          {filteredVideos.map((video) => (
             <motion.div
-              initial={{ scale: 0.9, rotateX: 10 }}
-              animate={{ scale: 1, rotateX: 0 }}
-              exit={{ scale: 0.9, rotateX: -10 }}
-              onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-[360px] sm:max-w-[390px] aspect-[9/16] max-h-[90vh] rounded-[36px] overflow-hidden border-2 border-sky-500/50 bg-black shadow-[0_0_90px_rgba(2,132,199,0.4)] flex flex-col justify-between"
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+              key={video.id}
+              className="flex-shrink-0 w-[300px] sm:w-[360px] snap-start"
             >
-              {/* Modal Top Bar */}
-              <div className="absolute top-0 left-0 right-0 p-4 flex items-center justify-between bg-gradient-to-b from-black/90 via-black/50 to-transparent z-20">
-                <div className="flex items-center gap-2">
-                  <span className="px-2.5 py-0.5 rounded-md bg-sky-500/20 text-sky-400 text-xs font-mono font-bold">
-                    {modalVideo.category}
-                  </span>
-                  <h3 className="font-display font-bold text-white text-xs sm:text-sm truncate max-w-[180px]">
-                    {modalVideo.title}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setModalVideo(null)}
-                  className="p-1.5 rounded-full bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white transition cursor-pointer"
+              <TiltCard
+                maxTilt={8}
+                glowColor="rgba(56, 189, 248, 0.25)"
+                className="group relative rounded-3xl overflow-hidden bg-slate-950/90 border border-slate-800/80 hover:border-sky-500/60 shadow-xl transition-all duration-300 flex flex-col justify-between h-full"
+              >
+                {/* Video Card Poster & Play Trigger */}
+                <div
+                  onClick={() => handleOpenVideo(video)}
+                  className="relative aspect-[9/14] w-full overflow-hidden bg-slate-900 cursor-pointer"
                 >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
+                  {video.posterUrl ? (
+                    <img
+                      src={video.posterUrl}
+                      alt={video.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-900">
+                      <Film className="h-12 w-12 text-slate-700" />
+                    </div>
+                  )}
 
-              {/* 9:16 Video Player Stream */}
-              <div className="w-full h-full relative bg-black">
-                <UniversalVideoPlayer
-                  key={"modal_" + modalVideo.id + modalVideo.videoUrl}
-                  url={modalVideo.videoUrl}
-                  title={modalVideo.title}
-                  posterUrl={modalVideo.posterUrl}
-                  autoPlay={true}
-                  controls={true}
-                  loop={true}
-                  className="w-full h-full object-cover"
-                />
+                  {/* Dark Vignette Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-60 transition-opacity" />
+
+                  {/* Category & Duration Badges */}
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+                    <span className="px-3 py-1 rounded-full bg-slate-950/90 border border-sky-500/40 text-sky-300 text-[10px] font-mono font-bold backdrop-blur-md">
+                      {video.category}
+                    </span>
+                    {video.duration && (
+                      <span className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-950/90 border border-slate-700 text-slate-300 text-[10px] font-mono font-bold backdrop-blur-md">
+                        <Clock className="h-3 w-3 text-sky-400" />
+                        <span>{video.duration}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Centered Glowing Play Button */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="h-14 w-14 rounded-full bg-sky-500/90 text-white flex items-center justify-center shadow-lg shadow-sky-500/40 group-hover:scale-115 transition-transform duration-300">
+                      <Play className="h-6 w-6 fill-white translate-x-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Client Name Stamp */}
+                  {video.clientName && (
+                    <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center gap-1.5 text-xs font-mono text-sky-300 font-bold">
+                      <Building2 className="h-3.5 w-3.5 text-sky-400" />
+                      <span>{video.clientName}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Bottom Details Footer */}
+                <div className="p-5 bg-slate-950/90 border-t border-slate-800/80 space-y-2">
+                  <h3 className="font-display font-bold text-base text-white group-hover:text-sky-300 transition-colors line-clamp-1">
+                    {video.title}
+                  </h3>
+                  {video.description && (
+                    <p className="text-xs text-slate-400 font-sans line-clamp-2 font-medium">
+                      {video.description}
+                    </p>
+                  )}
+                  <button
+                    onClick={() => handleOpenVideo(video)}
+                    className="pt-2 w-full flex items-center justify-between text-xs font-mono font-bold text-sky-400 hover:text-sky-300 transition"
+                  >
+                    <span>Play 4K Theater Reel</span>
+                    <Eye className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </TiltCard>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* 4K Modal Player */}
+        <AnimatePresence>
+          {modalVideo && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 sm:p-8"
+              onClick={() => setModalVideo(null)}
+            >
+              <div
+                className="relative w-full max-w-5xl rounded-3xl overflow-hidden border border-sky-500/50 bg-slate-950 shadow-2xl shadow-sky-500/20"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-950">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse" />
+                    <span className="font-display font-bold text-sm text-white">
+                      {modalVideo.title}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setModalVideo(null)}
+                    className="p-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white transition"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="aspect-video w-full bg-black">
+                  <UniversalVideoPlayer
+                    url={modalVideo.videoUrl}
+                    title={modalVideo.title}
+                  />
+                </div>
               </div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>
+      </div>
     </section>
   );
 }

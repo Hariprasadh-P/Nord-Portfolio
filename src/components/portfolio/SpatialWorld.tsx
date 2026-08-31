@@ -7,11 +7,24 @@ import MiniHUDCompass3D from "@/components/canvas/MiniHUDCompass3D";
 import HubSector from "./HubSector";
 import VideoShowcase, { VideoItemData } from "./VideoShowcase";
 import PackagesSection, { PackageItemData } from "./PackagesSection";
+import ServicesSection, { ServiceItemData } from "./ServicesSection";
 import AboutSection from "./AboutSection";
 import ContactSection from "./ContactSection";
+import CaseStudies, { CaseStudyData } from "./CaseStudies";
 import TestimonialsSection, { TestimonialData } from "./TestimonialsSection";
 import Footer from "./Footer";
-import { ArrowUp, ArrowRight, ArrowDown, ArrowLeft, Home, Compass, X, Navigation, Layers, Mountain } from "lucide-react";
+import {
+  ArrowUp,
+  ArrowRight,
+  ArrowDown,
+  ArrowLeft,
+  Home,
+  Compass,
+  X,
+  Navigation,
+  Layers,
+} from "lucide-react";
+import { soundFx } from "@/lib/soundFx";
 
 interface SpatialWorldProps {
   settings: {
@@ -27,10 +40,14 @@ interface SpatialWorldProps {
     linkedinUrl?: string | null;
     twitterUrl?: string | null;
     youtubeUrl?: string | null;
+    whatsappNumber?: string;
+    calendlyUrl?: string;
     accentColor: string;
   };
   videos: VideoItemData[];
   packages: PackageItemData[];
+  services?: ServiceItemData[];
+  caseStudies?: CaseStudyData[];
   testimonials?: TestimonialData[];
   activeDirection: CardinalDirection;
   onSelectDirection: (direction: CardinalDirection) => void;
@@ -43,6 +60,8 @@ export default function SpatialWorld({
   settings,
   videos,
   packages,
+  services,
+  caseStudies,
   testimonials,
   activeDirection,
   onSelectDirection,
@@ -54,6 +73,9 @@ export default function SpatialWorld({
   const [isRadarMode, setIsRadarMode] = useState(false);
   const [transitLabel, setTransitLabel] = useState<string | null>(null);
   const [transitAltitude, setTransitAltitude] = useState<string | null>(null);
+
+  // Touch swipe handling for mobile/tablets
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   // Sector scroll container refs
   const northRef = useRef<HTMLDivElement>(null);
@@ -77,6 +99,49 @@ export default function SpatialWorld({
     mouseY.set(e.clientY / h - 0.5);
   };
 
+  // Touch Swipe Listeners for mobile/touch screens
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+      };
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStartRef.current || e.changedTouches.length === 0) return;
+    const diffX = e.changedTouches[0].clientX - touchStartRef.current.x;
+    const diffY = e.changedTouches[0].clientY - touchStartRef.current.y;
+    const threshold = 60;
+
+    // Only swipe between sectors if horizontal swipe is dominant and starting from hub
+    if (activeDirection === "hub") {
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX > threshold) {
+          // Swipe Right -> West (Contact)
+          soundFx.playCoordinateWarp();
+          onSelectDirection("west");
+        } else if (diffX < -threshold) {
+          // Swipe Left -> East (Tariff)
+          soundFx.playCoordinateWarp();
+          onSelectDirection("east");
+        }
+      } else {
+        if (diffY > threshold) {
+          // Swipe Down -> North (Works)
+          soundFx.playCoordinateWarp();
+          onSelectDirection("north");
+        } else if (diffY < -threshold) {
+          // Swipe Up -> South (About)
+          soundFx.playCoordinateWarp();
+          onSelectDirection("south");
+        }
+      }
+    }
+    touchStartRef.current = null;
+  };
+
   // 3D Physical Spatial Topology & Altitude Metrics
   const sectorElevations = {
     hub: {
@@ -86,7 +151,7 @@ export default function SpatialWorld({
     },
     north: {
       altitude: "0m (FLIGHT DECK)",
-      title: "000° NORTH — 9:16 VERTICAL SHOWREELS",
+      title: "000° NORTH — 4K REELS GALLERY",
       zPos: 0,
     },
     east: {
@@ -101,7 +166,7 @@ export default function SpatialWorld({
     },
     west: {
       altitude: "-80m (TELEPORT DECK)",
-      title: "270° WEST — CONTACT & BRIEF",
+      title: "270° WEST — DIRECT BRIEF & BOOKING",
       zPos: -80,
     },
   };
@@ -126,7 +191,7 @@ export default function SpatialWorld({
     if (activeDirection === "west" && westRef.current) westRef.current.scrollTop = 0;
   }, [activeDirection]);
 
-  // Dynamic Global Atmospheric Aura Configs (Dark Obsidian Base with Vivid Neon Glowing Orbs)
+  // Dynamic Global Atmospheric Aura Configs
   const atmosphereThemes = {
     hub: {
       bg: "bg-[#07080D]",
@@ -165,7 +230,8 @@ export default function SpatialWorld({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
         document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
+        document.activeElement?.tagName === "TEXTAREA" ||
+        document.activeElement?.tagName === "SELECT"
       ) {
         return;
       }
@@ -175,6 +241,7 @@ export default function SpatialWorld({
         case "w":
         case "W":
           e.preventDefault();
+          soundFx.playCoordinateWarp();
           onSelectDirection("north");
           setIsRadarMode(false);
           break;
@@ -182,6 +249,7 @@ export default function SpatialWorld({
         case "d":
         case "D":
           e.preventDefault();
+          soundFx.playCoordinateWarp();
           onSelectDirection("east");
           setIsRadarMode(false);
           break;
@@ -189,6 +257,7 @@ export default function SpatialWorld({
         case "s":
         case "S":
           e.preventDefault();
+          soundFx.playCoordinateWarp();
           onSelectDirection("south");
           setIsRadarMode(false);
           break;
@@ -196,6 +265,7 @@ export default function SpatialWorld({
         case "a":
         case "A":
           e.preventDefault();
+          soundFx.playCoordinateWarp();
           onSelectDirection("west");
           setIsRadarMode(false);
           break;
@@ -204,6 +274,7 @@ export default function SpatialWorld({
         case "h":
         case "H":
           e.preventDefault();
+          soundFx.playCoordinateWarp();
           onSelectDirection("hub");
           setIsRadarMode(false);
           break;
@@ -237,20 +308,15 @@ export default function SpatialWorld({
 
     switch (activeDirection) {
       case "north":
-        // Camera swoops down to North Flight Deck (Z = 0)
         return { x: "0vw", y: "100vh", scale: 1, rotateX: 0, rotateY: 0, rotateZ: 0, z: 0 };
       case "east":
-        // Camera glides down into East Matrix Vault (Z = -120px)
         return { x: "-100vw", y: "0vh", scale: 1, rotateX: 0, rotateY: 0, rotateZ: 0, z: 120 };
       case "south":
-        // Camera plunges down into South Sunken Monolith Plaza (Z = -240px)
         return { x: "0vw", y: "-100vh", scale: 1, rotateX: 0, rotateY: 0, rotateZ: 0, z: 240 };
       case "west":
-        // Camera dives into West Teleport Deck (Z = -80px)
         return { x: "100vw", y: "0vh", scale: 1, rotateX: 0, rotateY: 0, rotateZ: 0, z: 80 };
       case "hub":
       default:
-        // Camera ascends to the Elevated Apex Summit (Z = +160px)
         return { x: "0vw", y: "0vh", scale: 1, rotateX: 0, rotateY: 0, rotateZ: 0, z: -160 };
     }
   };
@@ -258,6 +324,7 @@ export default function SpatialWorld({
   const transform = getTransform();
 
   const handleSelectPackageAndNavigate = (pkgName: string) => {
+    soundFx.playSuccessChime();
     onSelectPackage(pkgName);
     onSelectDirection("west");
     setIsRadarMode(false);
@@ -268,6 +335,8 @@ export default function SpatialWorld({
   return (
     <div
       onMouseMove={handleGlobalMouseMove}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       style={{ perspective: 1500 }}
       className={`relative w-screen h-screen overflow-hidden ${atmosphereThemes.bg} transition-colors duration-700 text-slate-100 select-none`}
     >
@@ -396,7 +465,6 @@ export default function SpatialWorld({
               : ""
           }`}
         >
-          {/* Summit Elevation Ring Shadow in Radar Mode */}
           {isRadarMode && (
             <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-purple-600 text-white font-mono text-[10px] font-black tracking-widest shadow-lg">
               APEX SUMMIT: +160m
@@ -418,6 +486,7 @@ export default function SpatialWorld({
               subHeadline={settings.subHeadline}
               activeDirection={activeDirection}
               onSelectDirection={(dir) => {
+                soundFx.playCoordinateWarp();
                 onSelectDirection(dir);
                 setIsRadarMode(false);
               }}
@@ -452,7 +521,7 @@ export default function SpatialWorld({
             </div>
           )}
 
-          <div className="min-h-screen flex flex-col justify-between pt-24 pb-12">
+          <div className="min-h-screen flex flex-col justify-between pt-24 pb-20">
             <VideoShowcase videos={videos} />
             <Footer
               agencyName={settings.agencyName}
@@ -489,11 +558,21 @@ export default function SpatialWorld({
             </div>
           )}
 
-          <div className="min-h-screen flex flex-col justify-between pt-24 pb-12">
-            <PackagesSection
-              packages={packages}
-              onSelectPackage={handleSelectPackageAndNavigate}
-            />
+          <div className="min-h-screen flex flex-col justify-between pt-24 pb-20">
+            <div className="space-y-0">
+              <PackagesSection
+                packages={packages}
+                onSelectPackage={handleSelectPackageAndNavigate}
+              />
+              {services && services.length > 0 && (
+                <ServicesSection
+                  services={services}
+                  onSelectService={(title) => {
+                    onSelectDirection("west");
+                  }}
+                />
+              )}
+            </div>
             <Footer
               agencyName={settings.agencyName}
               logoUrl={settings.logoUrl}
@@ -529,13 +608,19 @@ export default function SpatialWorld({
             </div>
           )}
 
-          <div className="min-h-screen flex flex-col justify-between pt-24 pb-12">
+          <div className="min-h-screen flex flex-col justify-between pt-24 pb-20">
             <div className="space-y-16">
               <AboutSection
                 aboutText={settings.aboutText}
                 agencyName={settings.agencyName}
                 location={settings.location}
               />
+              {caseStudies && caseStudies.length > 0 && (
+                <CaseStudies
+                  caseStudies={caseStudies}
+                  onOpenContact={() => onSelectDirection("west")}
+                />
+              )}
               {testimonials && testimonials.length > 0 && (
                 <TestimonialsSection testimonials={testimonials} />
               )}
@@ -575,12 +660,14 @@ export default function SpatialWorld({
             </div>
           )}
 
-          <div className="min-h-screen flex flex-col justify-between pt-24 pb-12">
+          <div className="min-h-screen flex flex-col justify-between pt-24 pb-20">
             <ContactSection
               contactEmail={settings.contactEmail}
               contactPhone={settings.contactPhone}
               location={settings.location}
               selectedPackage={selectedPackage}
+              whatsappNumber={settings.whatsappNumber}
+              calendlyUrl={settings.calendlyUrl}
             />
             <Footer
               agencyName={settings.agencyName}
@@ -596,11 +683,42 @@ export default function SpatialWorld({
         </div>
       </motion.div>
 
+      {/* ============================================================== */}
+      {/* FLOATING GLASSMORPHIC "RETURN TO 3D COMPASS HUB" PILL */}
+      {/* ============================================================== */}
+      <AnimatePresence>
+        {activeDirection !== "hub" && !isRadarMode && (
+          <motion.div
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3"
+          >
+            <button
+              onClick={() => {
+                soundFx.playCoordinateWarp();
+                onSelectDirection("hub");
+              }}
+              className="group flex items-center gap-2.5 px-6 py-3 rounded-full bg-slate-950/90 hover:bg-gradient-to-r hover:from-purple-600 hover:via-fuchsia-600 hover:to-purple-700 text-white border border-purple-500/60 hover:border-purple-300 shadow-2xl shadow-purple-500/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer font-mono font-bold text-xs"
+            >
+              <div className="h-2 w-2 rounded-full bg-purple-400 animate-ping" />
+              <Home className="h-4 w-4 text-purple-300 group-hover:text-white" />
+              <span>RETURN TO COMPASS HUB</span>
+              <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] border border-slate-700 group-hover:bg-white/20 group-hover:text-white">
+                [Esc]
+              </span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* FIXED 3D MINI HUD COMPASS & QUICK SECTOR JUMP */}
       {activeDirection !== "hub" && (
         <MiniHUDCompass3D
           activeDirection={activeDirection}
           onSelectDirection={(dir) => {
+            soundFx.playCoordinateWarp();
             onSelectDirection(dir);
             setIsRadarMode(false);
           }}
@@ -609,12 +727,15 @@ export default function SpatialWorld({
         />
       )}
 
-      {/* Floating 3D Spatial Navigation Directional Buttons */}
+      {/* Floating 3D Spatial Navigation Directional Buttons (on Hub) */}
       {!isRadarMode && activeDirection === "hub" && (
         <>
           {/* North Button */}
           <button
-            onClick={() => onSelectDirection("north")}
+            onClick={() => {
+              soundFx.playCoordinateWarp();
+              onSelectDirection("north");
+            }}
             aria-label="Navigate North"
             className="fixed top-20 left-1/2 -translate-x-1/2 z-40 p-2 sm:px-4 sm:py-2 rounded-full bg-slate-900/90 hover:bg-sky-600 text-sky-400 hover:text-white border border-sky-500/50 shadow-xl shadow-sky-500/20 backdrop-blur-xl flex items-center gap-1.5 text-xs font-mono font-bold transition-all hover:scale-110 active:scale-95 cursor-pointer"
           >
@@ -624,7 +745,10 @@ export default function SpatialWorld({
 
           {/* East Button */}
           <button
-            onClick={() => onSelectDirection("east")}
+            onClick={() => {
+              soundFx.playCoordinateWarp();
+              onSelectDirection("east");
+            }}
             aria-label="Navigate East"
             className="fixed right-4 sm:right-6 top-1/2 -translate-y-1/2 z-40 p-2 sm:px-4 sm:py-2 rounded-full bg-slate-900/90 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/50 shadow-xl shadow-emerald-500/20 backdrop-blur-xl flex items-center gap-1.5 text-xs font-mono font-bold transition-all hover:scale-110 active:scale-95 cursor-pointer"
           >
@@ -634,7 +758,10 @@ export default function SpatialWorld({
 
           {/* South Button */}
           <button
-            onClick={() => onSelectDirection("south")}
+            onClick={() => {
+              soundFx.playCoordinateWarp();
+              onSelectDirection("south");
+            }}
             aria-label="Navigate South"
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 p-2 sm:px-4 sm:py-2 rounded-full bg-slate-900/90 hover:bg-amber-600 text-amber-400 hover:text-white border border-amber-500/50 shadow-xl shadow-amber-500/20 backdrop-blur-xl flex items-center gap-1.5 text-xs font-mono font-bold transition-all hover:scale-110 active:scale-95 cursor-pointer"
           >
@@ -644,7 +771,10 @@ export default function SpatialWorld({
 
           {/* West Button */}
           <button
-            onClick={() => onSelectDirection("west")}
+            onClick={() => {
+              soundFx.playCoordinateWarp();
+              onSelectDirection("west");
+            }}
             aria-label="Navigate West"
             className="fixed left-4 sm:left-6 top-1/2 -translate-y-1/2 z-40 p-2 sm:px-4 sm:py-2 rounded-full bg-slate-900/90 hover:bg-pink-600 text-pink-400 hover:text-white border border-pink-500/50 shadow-xl shadow-pink-500/20 backdrop-blur-xl flex items-center gap-1.5 text-xs font-mono font-bold transition-all hover:scale-110 active:scale-95 cursor-pointer"
           >

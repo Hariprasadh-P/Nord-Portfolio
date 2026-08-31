@@ -176,10 +176,15 @@ export default function Footer({
           </div>
 
           <div className="flex items-center gap-4">
-            <Link href="/admin" className="hover:text-purple-400 transition flex items-center gap-1">
+            <a
+              href={process.env.NEXT_PUBLIC_ADMIN_URL || "http://localhost:3001"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-purple-400 transition flex items-center gap-1"
+            >
               <Lock className="h-3 w-3" />
               <span>Agency Console</span>
-            </Link>
+            </a>
           </div>
         </div>
       </div>

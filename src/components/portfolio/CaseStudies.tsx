@@ -4,23 +4,12 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, CheckCircle2, TrendingUp, Sparkles } from "lucide-react";
 
-export interface CaseStudyData {
-  id: string;
-  clientName: string;
-  title: string;
-  category: string;
-  roiMetric: string;
-  metricLabel: string;
-  description: string;
-  imageUrl?: string | null;
-  videoUrl?: string | null;
-  tags: string[];
-  isFeatured: boolean;
-  order: number;
-}
+import { CaseStudyItem } from "@/data/portfolioData";
+
+export type CaseStudyData = CaseStudyItem;
 
 interface CaseStudiesProps {
-  caseStudies: CaseStudyData[];
+  caseStudies: CaseStudyItem[];
   onOpenContact?: () => void;
 }
 
