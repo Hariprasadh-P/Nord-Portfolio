@@ -47,7 +47,7 @@ export default function ContactSection({
     phone: "",
     company: "",
     serviceNeeded: activeInitialPkg || "PERFORMANCE CATALYST (Growth Retainer)",
-    budgetRange: "$5k - $10k / mo",
+    budgetRange: "₹28,000 - ₹40,000 / mo",
     timeline: "1 - 2 Months",
     message: "",
   });
@@ -66,20 +66,20 @@ export default function ContactSection({
   }, [selectedPackage]);
 
   const routeOptions = [
-    "CREATOR FOUNDATION (Starter Retainer)",
-    "PERFORMANCE CATALYST (Growth Retainer)",
-    "ENTERPRISE MONOLITH (Custom Retainer)",
-    "4K Hero Commercial Brand Film",
-    "3D CGI & Kinetic Motion Graphics",
-    "Omnichannel Paid Ads Media Scaling",
+    "000° NORTH — Basic Route (₹20,000/mo)",
+    "090° EAST — Growth Route (₹28,000/mo)",
+    "180° SOUTH — Premium Route (₹36,000/mo)",
+    "4K Commercial Showreel & Ad Direction",
+    "3D Motion & Visual Storytelling",
+    "Social Media & Meta Paid Ads Management",
   ];
 
   const budgetChips = [
-    "$3k - $5k / mo",
-    "$5k - $10k / mo",
-    "$10k - $25k / mo",
-    "$25k+ / mo",
-    "Custom Project",
+    "₹20,000 – ₹30,000 / mo",
+    "₹30,000 – ₹60,000 / mo",
+    "₹60,000 – ₹1,00,000 / mo",
+    "₹1,00,000+ / mo",
+    "Custom Partnership",
   ];
 
   const timelineChips = [

@@ -668,36 +668,6 @@ export default function SpatialWorld({
         </div>
       </motion.div>
 
-      {/* ============================================================== */}
-      {/* FLOATING GLASSMORPHIC "RETURN TO 3D COMPASS HUB" PILL */}
-      {/* ============================================================== */}
-      <AnimatePresence>
-        {activeDirection !== "hub" && !isRadarMode && (
-          <motion.div
-            initial={{ opacity: 0, y: 30, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 30, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3"
-          >
-            <button
-              onClick={() => {
-                soundFx.playCoordinateWarp();
-                onSelectDirection("hub");
-              }}
-              className="group flex items-center gap-2.5 px-6 py-3 rounded-full bg-slate-950/90 hover:bg-gradient-to-r hover:from-purple-600 hover:via-fuchsia-600 hover:to-purple-700 text-white border border-purple-500/60 hover:border-purple-300 shadow-2xl shadow-purple-500/30 backdrop-blur-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer font-mono font-bold text-xs"
-            >
-              <div className="h-2 w-2 rounded-full bg-purple-400 animate-ping" />
-              <Home className="h-4 w-4 text-purple-300 group-hover:text-white" />
-              <span>RETURN TO COMPASS HUB</span>
-              <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] border border-slate-700 group-hover:bg-white/20 group-hover:text-white">
-                [Esc]
-              </span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* FIXED 3D MINI HUD COMPASS & QUICK SECTOR JUMP */}
       {activeDirection !== "hub" && (
         <MiniHUDCompass3D

@@ -17,9 +17,9 @@ export default function ResultsMetrics() {
 
     const ctx = gsap.context(() => {
       const counters = [
-        { ref: stat1Ref, end: 48, prefix: "$", suffix: "M+" },
+        { ref: stat1Ref, end: 40, prefix: "₹", suffix: " Cr+" },
         { ref: stat2Ref, end: 4.8, prefix: "", suffix: "x", decimals: 1 },
-        { ref: stat3Ref, end: 140, prefix: "", suffix: "M+" },
+        { ref: stat3Ref, end: 140, prefix: "", suffix: "M+ Views" },
         { ref: stat4Ref, end: 98.4, prefix: "", suffix: "%", decimals: 1 },
       ];
 
@@ -53,7 +53,7 @@ export default function ResultsMetrics() {
   const stats = [
     {
       ref: stat1Ref,
-      defaultText: "$48M+",
+      defaultText: "₹40 Cr+",
       label: "Revenue Generated for Clients",
       sub: "Blended attributable sales across e-commerce & high-ticket tech.",
       icon: <DollarSign className="h-5 w-5 text-brand-neon" />,

@@ -25,24 +25,17 @@ export default function Footer({
   twitterUrl = "https://x.com",
   youtubeUrl = "https://youtube.com",
 }: FooterProps) {
-  const [mumbaiTime, setMumbaiTime] = useState("");
-  const [londonTime, setLondonTime] = useState("");
+  const [istTime, setIstTime] = useState("");
 
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setMumbaiTime(
+      setIstTime(
         now.toLocaleTimeString("en-IN", {
           timeZone: "Asia/Kolkata",
           hour: "2-digit",
           minute: "2-digit",
-        })
-      );
-      setLondonTime(
-        now.toLocaleTimeString("en-GB", {
-          timeZone: "Europe/London",
-          hour: "2-digit",
-          minute: "2-digit",
+          second: "2-digit",
         })
       );
     };
@@ -151,19 +144,19 @@ export default function Footer({
             </ul>
           </div>
 
-          {/* Timezones & Hubs */}
+          {/* Studio Operating Hours & IST */}
           <div className="md:col-span-4 space-y-3">
             <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
               Studio Operating Hours
             </h4>
             <div className="space-y-2 text-xs font-mono text-slate-400">
-              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-slate-300">Mumbai / India (IST):</span>
-                <span className="font-bold text-purple-400">{mumbaiTime || "10:30 AM"}</span>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                <span className="text-slate-300">Live Indian Standard Time:</span>
+                <span className="font-bold text-purple-400 font-mono">{istTime || "10:30:00 AM"} IST</span>
               </div>
-              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-slate-300">London / UK (GMT):</span>
-                <span className="font-bold text-sky-400">{londonTime || "05:00 AM"}</span>
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-[11px]">
+                <span className="text-slate-400">Working Schedule:</span>
+                <span className="font-bold text-emerald-400">Mon – Sat (10 AM – 7 PM)</span>
               </div>
             </div>
           </div>

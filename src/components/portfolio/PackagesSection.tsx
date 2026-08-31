@@ -45,19 +45,19 @@ export default function PackagesSection({
   const [includeAdManagement, setIncludeAdManagement] = useState<boolean>(true);
   const [include3D, setInclude3D] = useState<boolean>(false);
 
-  // Dynamic scope calculation
+  // Dynamic scope calculation in INR (₹)
   const calculatedEstimate = React.useMemo(() => {
-    let base = 2500;
-    base += reelsCount * 220;
+    let base = 15000;
+    base += reelsCount * 1200;
     if (includeAdManagement) {
-      if (adSpendTier === "starter") base += 1200;
-      else if (adSpendTier === "scale") base += 2400;
-      else base += 4500;
+      if (adSpendTier === "starter") base += 8000;
+      else if (adSpendTier === "scale") base += 15000;
+      else base += 25000;
     }
     if (include3D) {
-      base += 1500;
+      base += 10000;
     }
-    const finalMonthly = Math.round(base / 50) * 50;
+    const finalMonthly = Math.round(base / 500) * 500;
     return {
       monthly: finalMonthly,
       quarterly: Math.round(finalMonthly * 3 * 0.9),
@@ -66,7 +66,7 @@ export default function PackagesSection({
 
   const handleApplyCalculatedScope = () => {
     soundFx.playSuccessChime();
-    const scopeLabel = `Custom Retainer (${reelsCount} Reels/mo${includeAdManagement ? " + Meta Ads" : ""}${include3D ? " + 3D CGI" : ""} — ~$${calculatedEstimate.monthly.toLocaleString()}/mo)`;
+    const scopeLabel = `Custom Retainer (${reelsCount} Reels/mo${includeAdManagement ? " + Meta Ads" : ""}${include3D ? " + 3D CGI" : ""} — ~₹${calculatedEstimate.monthly.toLocaleString("en-IN")}/mo)`;
     onSelectPackage?.(scopeLabel);
   };
 
@@ -169,7 +169,7 @@ export default function PackagesSection({
                   {/* Price Tag */}
                   <div className="my-6 p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-baseline gap-2">
                     <span className="font-display font-black text-4xl text-white">
-                      ${price.toLocaleString()}
+                      ₹{price.toLocaleString("en-IN")}
                     </span>
                     <span className="text-xs font-mono text-slate-400">
                       {billingCycle === "monthly" ? "/ month" : "/ quarter"}
@@ -240,7 +240,7 @@ export default function PackagesSection({
                 ESTIMATED MONTHLY INVESTMENT
               </span>
               <div className="font-display font-black text-3xl sm:text-4xl text-white my-1">
-                ${calculatedEstimate.monthly.toLocaleString()}
+                ₹{calculatedEstimate.monthly.toLocaleString("en-IN")}
                 <span className="text-xs font-mono text-slate-400 font-normal">/mo</span>
               </div>
               <button
@@ -340,9 +340,9 @@ export default function PackagesSection({
               {includeAdManagement && (
                 <div className="grid grid-cols-3 gap-1.5 pt-1">
                   {[
-                    { id: "starter", label: "< $10k" },
-                    { id: "scale", label: "$10k-$50k" },
-                    { id: "enterprise", label: "$50k+" },
+                    { id: "starter", label: "< ₹50k" },
+                    { id: "scale", label: "₹50k-₹2L" },
+                    { id: "enterprise", label: "₹2L+" },
                   ].map((t) => (
                     <button
                       key={t.id}
