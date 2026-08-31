@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AgencySettings {
+  id           String   @id @default("default")
+  agencyName   String   @default("NORD MEDIA HOUSE")
+  logoUrl      String   @default("/uploads/logos/nord-media-house.jpg")
+  motoLine     String   @default("ELEVATING VISUAL CULTURE THROUGH CINEMATIC DIRECTION & PERFORMANCE MEDIA")
+  subHeadline  String   @default("We engineer high-impact commercials, viral creator campaigns, bespoke 3D brand experiences, and scalable acquisition engines for premier global brands.")
+  aboutText    String   @default("Nord Media House is a premier creative production and digital growth studio specializing in cinematic visual storytelling and performance media.")
+  contactEmail String   @default("hello@nordmediahouse.com")
+  contactPhone String   @default("+1 (415) 890-3200")
+  location     String   @default("Los Angeles • New York • London • Stockholm")
+  instagramUrl String?  @default("https://instagram.com")
+  linkedinUrl  String?  @default("https://linkedin.com")
+  twitterUrl   String?  @default("https://x.com")
+  youtubeUrl   String?  @default("https://youtube.com")
+  accentColor  String   @default("#A82BA0")
+  colorScheme  String   @default("nord-plum") // "nord-plum", "deep-violet", "cyber-emerald", "electric-cyan", "sunset-gold"
+  updatedAt    DateTime @updatedAt
+}
+
+model VideoItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  videoUrl    String
+  posterUrl   String?
+  category    String   @default("Showreel")
+  clientName  String?
+  isFeatured  Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ServiceItem {
+  id               String   @id @default(cuid())
+  title            String
+  slug             String   @unique
+  shortDescription String
+  fullDescription  String
+  icon             String   @default("Zap")
+  deliverables     String   @default("[]") // JSON string of string[]
+  metrics          String   @default("[]") // JSON string of {label: string, value: string}[]
+  isFeatured       Boolean  @default(true)
+  order            Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model PackageItem {
+  id              String   @id @default(cuid())
+  name            String
+  tier            String   @default("Growth")
+  priceMonthly    Int      @default(2999)
+  priceQuarterly  Int      @default(7999)
+  description     String
+  features        String   @default("[]") // JSON string of string[]
+  isPopular       Boolean  @default(false)
+  badge           String?
+  ctaText         String   @default("Scale With This Plan")
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model CaseStudy {
+  id          String   @id @default(cuid())
+  clientName  String
+  title       String
+  category    String
+  roiMetric   String   @default("+340%")
+  metricLabel String   @default("ROAS Increase in 60 Days")
+  description String
+  imageUrl    String?
+  videoUrl    String?
+  tags        String   @default("[]") // JSON string of string[]
+  isFeatured  Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TestimonialItem {
+  id         String   @id @default(cuid())
+  author     String
+  role       String
+  company    String
+  quote      String
+  avatarUrl  String?
+  metric     String?  // e.g. "+716% Revenue Scaled"
+  rating     Int      @default(5)
+  isFeatured Boolean  @default(true)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Inquiry {
+  id            String   @id @default(cuid())
+  clientName    String
+  email         String
+  phone         String?
+  company       String?
+  serviceNeeded String
+  budgetRange   String
+  message       String
+  status        String   @default("NEW") // NEW, CONTACTED, CONVERTED, ARCHIVED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
